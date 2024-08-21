@@ -14,8 +14,6 @@
 const navItems = [
   { icon: "💰", label: "Earn" },
   { icon: "✅", label: "Tasks" },
-  { icon: "🏙️", label: "Town" },
-  { icon: "🔄", label: "Swap" },
   { icon: "👤", label: "Account" },
 ];
 </script>

@@ -1,21 +1,30 @@
 <template>
   <UModal>
     <UCard>
-      <div class="space-y-2">
-        <span class="text-4xl">{{ building.icon }}</span>
+      <div class="space-y-4">
+        <span class="text-8xl cursor-pointer">
+          {{ building.icon }}
+        </span>
+
         <p>Level {{ building.level }}</p>
         <p>Upgrade Cost: {{ building.upgradeCost }} Coins</p>
-        <UProgress v-if="building.inProgress" :value="progress" indicator />
+        <div v-if="building.inProgress">
+          <UProgress :value="progress" color="yellow">
+            <template #indicator="{ percent }">
+              <div class="text-right text-sm" :style="{ width: `${percent}%` }">
+                {{ timeLeft }}</div>
+            </template>
+          </UProgress>
+        </div>
         <UButton
           :label="
-            building.inProgress
-              ? 'In Progress'
-              : building.level == 1
+              building.level == 1
               ? 'Build'
               : 'Upgrade'
           "
+          color="yellow"
           :disabled="building.inProgress"
-          @click="upgradeBuilding(building)"
+          @click="upgradeBuilding(building); startProgressUpdate()"
         />
       </div>
     </UCard>
@@ -27,11 +36,28 @@ const props = defineProps({
   building: Object,
 });
 
-const { buildings, upgradeBuilding } = useBuildings();
+const { upgradeBuilding } = useBuildings();
 
-const progress = computed(() => {
-  if (!props.building.inProgress) return 0;
-  const elapsedTime = Date.now() - props.building.startTime;
-  return (elapsedTime / (props.building.buildingTime * 1000)) * 100;
-});
+const progress = ref(0);
+const timeLeft = ref('');
+
+let interval;
+
+const startProgressUpdate = () => {
+  interval = setInterval(() => {
+    const elapsedTime = Date.now() - props.building.startTime;
+    progress.value = (elapsedTime / (props.building.buildingTime * 1000)) * 100;
+    updateTimeLeft(props.building.buildingTime - elapsedTime / 1000);
+    if (progress.value >= 100) {
+      clearInterval(interval);
+    }
+  }, 100);
+};
+
+const updateTimeLeft = (seconds) => {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secondsLeft = Math.floor(seconds % 60);
+  timeLeft.value = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secondsLeft.toString().padStart(2, '0')}`;
+};
 </script>

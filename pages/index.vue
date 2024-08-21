@@ -12,16 +12,24 @@
         :style="building.style"
       >
         <div class="w-24 h-24 relative">
-          <!-- <UChip text="Sale" size="2xl" color="red" :show="!!building.sale">
-          </UChip> -->
+          <UTooltip :text="`${building.name} (${building.level})`">
             <UButton
               color="white"
               variant="soft"
               :label="building.icon"
               size="xl"
-              :class="{ 'blur-md': building.sale, 'text-6xl': true }"
-              @click="!building.sale ? modal.open(Building, {building}): false"
+              :class="{ 'blur-md': building.upgradable, 'text-6xl': true }"
+              @click="
+                !building.upgradable
+                  ? modal.open(Building, { building })
+                  : toast.add({
+                      title: `${building.name} Not yet buildable.`,
+                      color: 'red',
+                      avatar: { text: building.icon },
+                    })
+              "
             />
+          </UTooltip>
         </div>
       </div>
     </div>
@@ -33,9 +41,11 @@
 <script setup>
 import { Building } from "#components";
 
-const { buildings, resources, upgradeBuilding } = useBuildings()
+const { buildings } = useBuildings();
 const modal = useModal();
 const toast = useToast();
-
-
+const { data: resources } = await useFetch("/api/coins", {
+  method: "GET",
+  server: false,
+});
 </script>

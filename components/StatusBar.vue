@@ -4,7 +4,7 @@
   >
     <div class="flex space-x-4">
       <UButton
-        :label="`🪙 ${resources?.coins}`"
+        :label="`🪙 ${resources?.coins || 0}`"
         color="white"
         variant="soft"
         size="xl"
@@ -18,14 +18,7 @@
         :padded="false"
       />
       <UButton
-        label="🚗 0"
-        color="white"
-        variant="soft"
-        size="xl"
-        :padded="false"
-      />
-      <UButton
-        label="🌙 14"
+        :label="`⌛ ${resources?.coinsEarnedPerHour}`"
         color="white"
         variant="soft"
         size="xl"
@@ -34,13 +27,12 @@
     </div>
 
     <div class="flex space-x-2">
-      <UButton label="Legendary" />
-      <UButton label="Connect Wallet" />
+      <WalletConnection />
     </div>
   </div>
 </template>
 <script setup>
-
-const { resources } = useBuildings()
-
+defineProps({
+  resources: Object,
+});
 </script>
